@@ -5,6 +5,10 @@
   // localStorage 키. 같은 PC의 다른 앱과 섞이지 않게 "reading-log."로 시작한다
   const STORAGE_KEY = 'reading-log.records';
 
+  // 글자 수 제한 (SPEC 결정 사항 4번). 앞뒤 공백을 뺀 뒤 센다
+  const TITLE_MAX = 50;
+  const MEMO_MAX = 100;
+
   const form = document.getElementById('record-form');
   const dateInput = document.getElementById('date');
   const titleInput = document.getElementById('title');
@@ -85,6 +89,9 @@
     if (title === '') {
       return { error: '책이름을 적어 주세요.' };
     }
+    if (title.length > TITLE_MAX) {
+      return { error: '책이름은 ' + TITLE_MAX + '자까지 적을 수 있어요. (지금 ' + title.length + '자)' };
+    }
     // 숫자 칸에 '1-20'처럼 숫자가 아닌 글자가 있으면 value는 빈칸이 되고 validity.badInput이 true가 된다
     if (startInput.validity && startInput.validity.badInput) {
       return { error: '시작쪽에는 숫자만 적어 주세요.' };
@@ -110,6 +117,9 @@
     }
     if (endPage < startPage) {
       return { error: '끝쪽이 시작쪽보다 작아요. 다시 확인해 주세요.' };
+    }
+    if (memo.length > MEMO_MAX) {
+      return { error: '메모는 ' + MEMO_MAX + '자까지 적을 수 있어요. (지금 ' + memo.length + '자)' };
     }
 
     return {
