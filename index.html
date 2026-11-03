@@ -42,10 +42,11 @@
       <p id="message" class="message" role="alert" hidden></p>
     </form>
 
-    <!-- 월 보기 (기능 3에서 연 보기 탭이 옆에 붙는다) -->
+    <!-- 월 보기 / 연 보기 -->
     <section class="views">
       <div class="tabs" role="tablist" aria-label="보기 선택">
         <button type="button" class="tab" id="tab-month" role="tab" aria-selected="true" aria-controls="month-panel">월 보기</button>
+        <button type="button" class="tab" id="tab-year" role="tab" aria-selected="false" aria-controls="year-panel">연 보기</button>
       </div>
 
       <div id="month-panel" class="panel" role="tabpanel" aria-labelledby="tab-month">
@@ -57,6 +58,17 @@
         <p class="count">읽은 책 <strong id="month-count">0</strong>권</p>
         <p id="empty" class="empty">이 달에는 기록이 없습니다</p>
         <ul id="record-list" class="record-list" role="list"></ul>
+      </div>
+
+      <div id="year-panel" class="panel" role="tabpanel" aria-labelledby="tab-year" hidden>
+        <div class="period-nav">
+          <button type="button" class="btn-nav" id="prev-year" aria-label="이전 해">&#x25C0;&#xFE0E;</button>
+          <h2 class="period-label" id="year-label"></h2>
+          <button type="button" class="btn-nav" id="next-year" aria-label="다음 해">&#x25B6;&#xFE0E;</button>
+        </div>
+        <p class="count">읽은 책 <strong id="year-count">0</strong>권</p>
+        <p id="year-empty" class="empty">이 해에는 기록이 없습니다</p>
+        <ul id="title-list" class="title-list" role="list"></ul>
       </div>
     </section>
   </main>

@@ -1,4 +1,4 @@
-// 독서 기록 — 기능 1(기록 추가 · 삭제 · localStorage 저장) + 기능 2(월 보기)
+// 독서 기록 — 기능 1(기록 추가 · 삭제 · localStorage 저장) + 기능 2(월 보기) + 기능 3(연 보기)
 (() => {
   'use strict';
 
@@ -22,12 +22,23 @@
   const monthCountEl = document.getElementById('month-count');
   const prevMonthBtn = document.getElementById('prev-month');
   const nextMonthBtn = document.getElementById('next-month');
+  const yearLabelEl = document.getElementById('year-label');
+  const yearCountEl = document.getElementById('year-count');
+  const yearEmptyEl = document.getElementById('year-empty');
+  const titleListEl = document.getElementById('title-list');
+  const prevYearBtn = document.getElementById('prev-year');
+  const nextYearBtn = document.getElementById('next-year');
+  const tabMonthBtn = document.getElementById('tab-month');
+  const tabYearBtn = document.getElementById('tab-year');
+  const monthPanel = document.getElementById('month-panel');
+  const yearPanel = document.getElementById('year-panel');
 
   // 기록 하나의 모양: { id, date: "2026-11-03", title, startPage, endPage, memo }
   let records = loadRecords();
 
-  // 지금 보고 있는 달 ("2026-11"). 앱을 열면 휴대폰 현지 시간의 이번 달. 저장하지는 않는다
+  // 지금 보고 있는 달 ("2026-11")과 해 ("2026"). 앱을 열면 휴대폰 현지 시간의 이번 달·올해. 저장하지는 않는다
   let viewMonth = todayString().slice(0, 7);
+  let viewYear = todayString().slice(0, 4);
 
   // ---------- 저장소 ----------
 
@@ -175,6 +186,11 @@
     return String(d.getFullYear()).padStart(4, '0') + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
 
+  // 해를 delta만큼 옮긴다. "2026"에서 +1이면 "2027"
+  function shiftYear(y, delta) {
+    return String(Number(y) + delta).padStart(4, '0');
+  }
+
   // ---------- 목록 ----------
 
   // 기록 한 건을 목록 한 줄(li)로 만든다. 사용자가 적은 글은 textContent로만 넣는다 (innerHTML 사용 금지)
@@ -230,9 +246,37 @@
     list.forEach((record) => listEl.appendChild(buildRecordItem(record)));
   }
 
+  // 연 보기: 연도 → 권수 → 빈 해 문구 → 그 해 읽은 책이름 목록 (처음 읽은 날짜 순)
+  function renderYear() {
+    const titles = distinctTitles(sortOldestFirst(recordsInPeriod(viewYear)));
+    yearLabelEl.textContent = Number(viewYear) + '년';
+    yearCountEl.textContent = String(titles.length);
+    yearEmptyEl.hidden = titles.length > 0;
+    titleListEl.textContent = '';
+    titles.forEach((title) => {
+      const li = document.createElement('li');
+      li.textContent = title;
+      titleListEl.appendChild(li);
+    });
+  }
+
   function render() {
     renderMonth();
+    renderYear();
   }
+
+  // ---------- 탭 전환 ----------
+
+  // 선택 표시(aria-selected)와 패널 숨김을 함께 바꾼다. 보던 달·해는 그대로 둔다
+  function showTab(tab) {
+    tabMonthBtn.setAttribute('aria-selected', String(tab === 'month'));
+    tabYearBtn.setAttribute('aria-selected', String(tab === 'year'));
+    monthPanel.hidden = tab !== 'month';
+    yearPanel.hidden = tab !== 'year';
+  }
+
+  tabMonthBtn.addEventListener('click', () => showTab('month'));
+  tabYearBtn.addEventListener('click', () => showTab('year'));
 
   // ---------- 저장 ----------
 
@@ -260,8 +304,9 @@
     startInput.value = '';
     endInput.value = '';
     memoInput.value = '';
-    // 저장한 기록의 달로 이동해 방금 적은 기록이 바로 보이게 한다
+    // 저장한 기록의 달·해로 이동해 방금 적은 기록이 바로 보이게 한다
     viewMonth = result.record.date.slice(0, 7);
+    viewYear = result.record.date.slice(0, 4);
     render();
   });
 
@@ -298,7 +343,7 @@
     render();
   });
 
-  // ---------- 달 이동 ----------
+  // ---------- 달·해 이동 ----------
 
   prevMonthBtn.addEventListener('click', () => {
     viewMonth = shiftMonth(viewMonth, -1);
@@ -307,6 +352,16 @@
 
   nextMonthBtn.addEventListener('click', () => {
     viewMonth = shiftMonth(viewMonth, 1);
+    render();
+  });
+
+  prevYearBtn.addEventListener('click', () => {
+    viewYear = shiftYear(viewYear, -1);
+    render();
+  });
+
+  nextYearBtn.addEventListener('click', () => {
+    viewYear = shiftYear(viewYear, 1);
     render();
   });
 

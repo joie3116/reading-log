@@ -294,3 +294,19 @@ button {
   background: var(--accent);
   color: #fff;
 }
+
+/* 연 보기 책이름 목록: 한 줄에 책이름 하나, 가는 구분선 */
+.title-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.title-list li {
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
