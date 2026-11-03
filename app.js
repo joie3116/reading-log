@@ -1,4 +1,4 @@
-// 독서 기록 — 기능 1: 기록 추가 · 목록 표시 · 삭제 · localStorage 저장
+// 독서 기록 — 기능 1(기록 추가 · 삭제 · localStorage 저장) + 기능 2(월 보기)
 (() => {
   'use strict';
 
@@ -18,9 +18,16 @@
   const messageEl = document.getElementById('message');
   const emptyEl = document.getElementById('empty');
   const listEl = document.getElementById('record-list');
+  const monthLabelEl = document.getElementById('month-label');
+  const monthCountEl = document.getElementById('month-count');
+  const prevMonthBtn = document.getElementById('prev-month');
+  const nextMonthBtn = document.getElementById('next-month');
 
   // 기록 하나의 모양: { id, date: "2026-11-03", title, startPage, endPage, memo }
   let records = loadRecords();
+
+  // 지금 보고 있는 달 ("2026-11"). 앱을 열면 휴대폰 현지 시간의 이번 달. 저장하지는 않는다
+  let viewMonth = todayString().slice(0, 7);
 
   // ---------- 저장소 ----------
 
@@ -127,68 +134,104 @@
     };
   }
 
-  // ---------- 목록 ----------
+  // ---------- 기간별 보기 도우미 (기능 3 연 보기도 같이 쓴다) ----------
 
-  // 최근 날짜가 위, 같은 날짜면 나중에 적은 것이 위
-  function sortedRecords() {
-    return records
+  // prefix가 "2026-11"이면 그 달, "2026"이면 그 해의 기록
+  function recordsInPeriod(prefix) {
+    return records.filter((record) => String(record.date || '').startsWith(prefix + '-'));
+  }
+
+  // 서로 다른 책이름 (앞뒤 공백만 무시, 처음 나온 순서). 권수 = 이 배열의 길이
+  function distinctTitles(list) {
+    const titles = [];
+    list.forEach((record) => {
+      const title = String(record.title || '').trim();
+      if (title !== '' && !titles.includes(title)) titles.push(title);
+    });
+    return titles;
+  }
+
+  // 과거 → 최신 순. 같은 날짜면 먼저 적은 것이 위 (저장 순서)
+  function sortOldestFirst(list) {
+    return list
       .map((record, index) => ({ record, index }))
       .sort((a, b) => {
-        if (a.record.date !== b.record.date) {
-          return a.record.date < b.record.date ? 1 : -1;
-        }
-        return b.index - a.index;
+        const dateA = String(a.record.date || '');
+        const dateB = String(b.record.date || '');
+        if (dateA !== dateB) return dateA < dateB ? -1 : 1;
+        return a.index - b.index;
       })
       .map((item) => item.record);
   }
 
-  // 사용자가 적은 글은 textContent로만 넣는다 (innerHTML 사용 금지)
-  function render() {
+  // "2026-11" → "2026년 11월"
+  function monthLabel(ym) {
+    return Number(ym.slice(0, 4)) + '년 ' + Number(ym.slice(5, 7)) + '월';
+  }
+
+  // 달을 delta만큼 옮긴다. "2026-12"에서 +1이면 "2027-01", "2026-01"에서 -1이면 "2025-12"
+  function shiftMonth(ym, delta) {
+    const d = new Date(Number(ym.slice(0, 4)), Number(ym.slice(5, 7)) - 1 + delta, 1);
+    return String(d.getFullYear()).padStart(4, '0') + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+
+  // ---------- 목록 ----------
+
+  // 기록 한 건을 목록 한 줄(li)로 만든다. 사용자가 적은 글은 textContent로만 넣는다 (innerHTML 사용 금지)
+  function buildRecordItem(record) {
+    const li = document.createElement('li');
+    li.className = 'record';
+
+    // 첫째 줄: 날짜 · 책이름 · 쪽수
+    const top = document.createElement('div');
+    top.className = 'record-top';
+
+    const dateEl = document.createElement('span');
+    dateEl.className = 'record-date';
+    dateEl.textContent = record.date;
+
+    const titleEl = document.createElement('span');
+    titleEl.className = 'record-title';
+    titleEl.textContent = record.title;
+
+    const pagesEl = document.createElement('span');
+    pagesEl.className = 'record-pages';
+    pagesEl.textContent = record.startPage + '~' + record.endPage + '쪽';
+
+    top.append(dateEl, titleEl, pagesEl);
+
+    // 둘째 줄: 메모 · 삭제 버튼
+    const bottom = document.createElement('div');
+    bottom.className = 'record-bottom';
+
+    const memoEl = document.createElement('span');
+    memoEl.className = 'record-memo';
+    memoEl.textContent = record.memo || '';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn-delete';
+    deleteBtn.textContent = '삭제';
+    deleteBtn.dataset.id = record.id;
+    deleteBtn.setAttribute('aria-label', record.date + ' ' + record.title + ' 기록 삭제');
+
+    bottom.append(memoEl, deleteBtn);
+    li.append(top, bottom);
+    return li;
+  }
+
+  // 월 보기: 달 이름 → 권수 → 빈 달 문구 → 그 달의 기록 목록
+  function renderMonth() {
+    const list = sortOldestFirst(recordsInPeriod(viewMonth));
+    monthLabelEl.textContent = monthLabel(viewMonth);
+    monthCountEl.textContent = String(distinctTitles(list).length);
+    emptyEl.hidden = list.length > 0;
     listEl.textContent = '';
-    const sorted = sortedRecords();
-    emptyEl.hidden = sorted.length > 0;
+    list.forEach((record) => listEl.appendChild(buildRecordItem(record)));
+  }
 
-    sorted.forEach((record) => {
-      const li = document.createElement('li');
-      li.className = 'record';
-
-      // 첫째 줄: 날짜 · 책이름 · 쪽수
-      const top = document.createElement('div');
-      top.className = 'record-top';
-
-      const dateEl = document.createElement('span');
-      dateEl.className = 'record-date';
-      dateEl.textContent = record.date;
-
-      const titleEl = document.createElement('span');
-      titleEl.className = 'record-title';
-      titleEl.textContent = record.title;
-
-      const pagesEl = document.createElement('span');
-      pagesEl.className = 'record-pages';
-      pagesEl.textContent = record.startPage + '~' + record.endPage + '쪽';
-
-      top.append(dateEl, titleEl, pagesEl);
-
-      // 둘째 줄: 메모 · 삭제 버튼
-      const bottom = document.createElement('div');
-      bottom.className = 'record-bottom';
-
-      const memoEl = document.createElement('span');
-      memoEl.className = 'record-memo';
-      memoEl.textContent = record.memo || '';
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'btn-delete';
-      deleteBtn.textContent = '삭제';
-      deleteBtn.dataset.id = record.id;
-      deleteBtn.setAttribute('aria-label', record.date + ' ' + record.title + ' 기록 삭제');
-
-      bottom.append(memoEl, deleteBtn);
-      li.append(top, bottom);
-      listEl.appendChild(li);
-    });
+  function render() {
+    renderMonth();
   }
 
   // ---------- 저장 ----------
@@ -217,6 +260,8 @@
     startInput.value = '';
     endInput.value = '';
     memoInput.value = '';
+    // 저장한 기록의 달로 이동해 방금 적은 기록이 바로 보이게 한다
+    viewMonth = result.record.date.slice(0, 7);
     render();
   });
 
@@ -250,6 +295,18 @@
       records = before;
       showMessage('삭제하지 못했어요. 다시 시도해 주세요.');
     }
+    render();
+  });
+
+  // ---------- 달 이동 ----------
+
+  prevMonthBtn.addEventListener('click', () => {
+    viewMonth = shiftMonth(viewMonth, -1);
+    render();
+  });
+
+  nextMonthBtn.addEventListener('click', () => {
+    viewMonth = shiftMonth(viewMonth, 1);
     render();
   });
 

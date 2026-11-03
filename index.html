@@ -42,11 +42,22 @@
       <p id="message" class="message" role="alert" hidden></p>
     </form>
 
-    <!-- 기록 목록 -->
-    <section class="records" aria-labelledby="records-heading">
-      <h2 id="records-heading">기록</h2>
-      <p id="empty" class="empty">아직 기록이 없습니다</p>
-      <ul id="record-list" class="record-list" role="list"></ul>
+    <!-- 월 보기 (기능 3에서 연 보기 탭이 옆에 붙는다) -->
+    <section class="views">
+      <div class="tabs" role="tablist" aria-label="보기 선택">
+        <button type="button" class="tab" id="tab-month" role="tab" aria-selected="true" aria-controls="month-panel">월 보기</button>
+      </div>
+
+      <div id="month-panel" class="panel" role="tabpanel" aria-labelledby="tab-month">
+        <div class="period-nav">
+          <button type="button" class="btn-nav" id="prev-month" aria-label="이전 달">&#x25C0;&#xFE0E;</button>
+          <h2 class="period-label" id="month-label"></h2>
+          <button type="button" class="btn-nav" id="next-month" aria-label="다음 달">&#x25B6;&#xFE0E;</button>
+        </div>
+        <p class="count">읽은 책 <strong id="month-count">0</strong>권</p>
+        <p id="empty" class="empty">이 달에는 기록이 없습니다</p>
+        <ul id="record-list" class="record-list" role="list"></ul>
+      </div>
     </section>
   </main>
 

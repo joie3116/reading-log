@@ -149,16 +149,84 @@ button {
   font-weight: 700;
 }
 
-/* 기록 목록 */
-.records {
+/* 월 보기 (기능 3에서 연 보기 탭이 옆에 붙는다) */
+.views {
   margin-top: 24px;
 }
 
-.records h2 {
-  margin: 0 0 10px;
-  font-size: 20px;
+/* 탭 줄: 선택된 탭은 파란 굵은 글씨 + 아래 파란 줄 */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
 }
 
+.tab {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 8px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tab[aria-selected="true"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.panel {
+  padding-top: 14px;
+}
+
+/* ◀ 2026년 11월 ▶ */
+.period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.period-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 20px;
+  text-align: center;
+}
+
+.btn-nav {
+  flex: 0 0 auto;
+  width: 48px;
+  min-height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.btn-nav:active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* 읽은 책 N권: 숫자만 크게 */
+.count {
+  margin: 10px 0 12px;
+  text-align: center;
+}
+
+.count strong {
+  font-size: 26px;
+  color: var(--primary);
+}
+
+/* 기록 목록 */
 .empty {
   margin: 0;
   color: var(--muted);
