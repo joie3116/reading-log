@@ -1,0 +1,228 @@
+/* 독서 기록 — 휴대폰 세로 화면 기준, 큰 글씨·큰 버튼, 색 두 가지 */
+
+:root {
+  --primary: #2f5d8a; /* 색 1: 제목 띠·저장 버튼 */
+  --accent: #b23b3b;  /* 색 2: 삭제 버튼·안내 문구 */
+  --ink: #1f1f1f;
+  --paper: #ffffff;
+  --line: #cfcfcf;        /* 상자 테두리 (장식) */
+  --line-strong: #8a8a8a; /* 입력 칸 테두리 (밝은 곳에서도 보이게 더 진하게) */
+  --muted: #666666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+/* 제목 띠 */
+.top {
+  background: var(--primary);
+  color: #fff;
+  padding: 14px 16px;
+}
+
+.top h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* 입력 폼 */
+.card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.hint {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+input {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input:focus {
+  outline: 3px solid var(--primary);
+  outline-offset: 1px;
+}
+
+/* 칸 안의 예시 글자. 브라우저 기본값(iOS는 아주 연한 회색)보다 진하게 */
+input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+input[type="date"] {
+  text-align: left;
+}
+
+input::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 1.4em;
+}
+
+/* 시작쪽 ~ 끝쪽 */
+.pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pages input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tilde {
+  font-size: 20px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+/* 안내 문구 (문제가 있을 때만 보임) */
+.message {
+  margin: 12px 0 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 기록 목록 */
+.records {
+  margin-top: 24px;
+}
+
+.records h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.record {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 첫째 줄: 날짜 · 책이름 · 쪽수 */
+.record-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.record-date {
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.record-title {
+  font-weight: 700;
+}
+
+/* 둘째 줄: 메모 · 삭제 버튼 */
+.record-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.record-memo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.btn-delete {
+  flex: 0 0 auto;
+  min-height: 44px; /* 손가락으로 누르기 좋은 최소 높이 */
+  padding: 6px 14px;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.btn-delete:active {
+  background: var(--accent);
+  color: #fff;
+}

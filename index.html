@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>독서 기록</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>독서 기록</h1>
+  </header>
+
+  <main>
+    <!-- 기록 추가 폼 -->
+    <form id="record-form" class="card" novalidate>
+      <div class="field">
+        <label for="date">날짜</label>
+        <input type="date" id="date" name="date">
+      </div>
+
+      <div class="field">
+        <label for="title">책이름</label>
+        <input type="text" id="title" name="title" placeholder="예: 명상록">
+      </div>
+
+      <div class="field">
+        <label for="start-page">쪽수</label>
+        <div class="pages">
+          <input type="number" id="start-page" name="start-page" inputmode="numeric" min="1" step="1" placeholder="시작쪽" aria-label="시작쪽">
+          <span class="tilde" aria-hidden="true">~</span>
+          <input type="number" id="end-page" name="end-page" inputmode="numeric" min="1" step="1" placeholder="끝쪽" aria-label="끝쪽">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="memo">메모 <span class="hint">(한 줄, 비워도 됨)</span></label>
+        <input type="text" id="memo" name="memo" placeholder="예: 1~2단원">
+      </div>
+
+      <button type="submit" class="btn-primary">저장</button>
+      <p id="message" class="message" role="alert" hidden></p>
+    </form>
+
+    <!-- 기록 목록 -->
+    <section class="records" aria-labelledby="records-heading">
+      <h2 id="records-heading">기록</h2>
+      <p id="empty" class="empty">아직 기록이 없습니다</p>
+      <ul id="record-list" class="record-list" role="list"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
